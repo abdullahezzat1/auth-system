@@ -10,26 +10,32 @@
 <body>
   <div class="container">
     <h1 style="text-align:center">Welcome!</h1>
-    @include('errors')
-    @include('success')
+    @if ($errors->any())
+      @foreach ($errors->all() as $error)
+        <p class="error">{{ $error }}</p>
+      @endforeach
+    @endif
+    @if (session('success'))
+        <p class="success">{{ session('success') }}</p>
+    @endif
     <div class="row">
       <div class="col">
         <h2>Sign Up</h2>
-        <form method="POST" action="signup">
+        <form method="POST" action="{{ env('APP_URL') }}/account/signup">
           @csrf
-          <input type="text" placeholder="Email" name="email" value="{{session('email')}}">
-          <input type="text" placeholder="First Name" name="first_name" value="{{session('first_name')}}">
-          <input type="text" placeholder="Last Name" name="last_name" value="{{session('last_name')}}">
+          <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
+          <input type="text" placeholder="First Name" name="first_name" value="{{ old('first_name') }}">
+          <input type="text" placeholder="Last Name" name="last_name" value="{{ old('last_name') }}">
           <input type="password" placeholder="Password" name="password">
-          <input type="password" placeholder="Repeat password" name="repeat_password">
+          <input type="password" placeholder="Repeat password" name="password_confirmation">
           <input type="submit" value="Submit">
         </form>
       </div>
       <div class="col">
         <h2>Login</h2>
-        <form method="POST" action="login">
+        <form method="POST" action="{{ env('APP_URL') }}/account/login">
           @csrf
-          <input type="text" placeholder="Email" name="email">
+          <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
           <input type="password" placeholder="Password" name="password">
           <input type="submit" value="Submit">
         </form>
@@ -37,9 +43,9 @@
 
       <div class="col">
         <h2>Forgot Password?</h2>
-        <form method="POST" action="forgot-password">
+        <form method="POST" action="{{ env('APP_URL') }}/account/password/forgot">
           @csrf
-          <input type="text" placeholder="Email" name="email">
+          <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
           <input type="submit" value="Submit">
         </form>
       </div>

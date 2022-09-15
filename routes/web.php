@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\GETController;
-use App\Http\Controllers\POSTController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,18 +15,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [GETController::class, 'home']);
-Route::get('/app', [GETController::class, 'app']);
-Route::get('/reset-password/{token}', [GETController::class, 'resetPassword']);
+Route::get('/', [HomeController::class, 'viewHome'])->middleware('guest')->name('login');
+Route::get('/app', [AccountController::class, 'viewAccount'])->middleware(['auth', 'verified']);
 
+Route::post('/account/signup', [AccountController::class, 'signup']);
+Route::post('/account/login', [AccountController::class, 'login']);
+Route::post('/account/logout', [AccountController::class, 'logout']);
+Route::post('/account/info/change', [AccountController::class, 'changeInfo']);
 
-Route::post('/signup', [POSTController::class, 'signup']);
-Route::post('/login', [POSTController::class, 'login']);
-Route::post('/forgot-password', [POSTController::class, 'forgotPassword']);
-Route::post('/reset-password', [POSTController::class, 'resetPassword']);
-Route::post('/change-password', [POSTController::class, 'changePassword']);
-Route::post('/change-profile-info', [POSTController::class, 'changeProfileInfo']);
-Route::post('/logout', [POSTController::class, 'logout']);
+Route::get('/account/email/verify', [AccountController::class, 'viewVerifyEmail'])
+	->middleware('auth')->name('verification.notice');
+Route::get('/account/email/verify/{id}/{hash}', [AccountController::class, 'verifyEmail'])
+	->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/account/email/resend-verification', [AccountController::class, 'resendVerification'])
+	->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-
-// dd('routing');
+Route::post('/account/password/forgot', [AccountController::class, 'forgotPassword'])
+	->middleware('guest')->name('password.email');
+Route::get('/account/password/reset/{token}', [AccountController::class, 'viewResetPassword'])
+	->middleware('guest')->name('password.reset');
+Route::post('/account/password/reset', [AccountController::class, 'resetPassword'])
+	->middleware('guest')->name('password.update');
+Route::post('/account/password/change', [AccountController::class, 'changePassword'])->middleware(['auth', 'verified']);

@@ -10,14 +10,22 @@
 <body>
   <div class="container">
     <h1 style="text-align:center">Reset your password</h1>
-    @include('errors')
+    @if ($errors->any())
+      @foreach ($errors->all() as $error)
+        <p class="error">{{ $error }}</p>
+      @endforeach
+    @endif
+    @if (session('success'))
+        <p class="success">{{ session('success') }}</p>
+    @endif
     <div class="row">
       <div class="col">
-        <form action="{{env('APP_URL')}}/reset-password" method="POST">
+        <form action="{{env('APP_URL')}}/account/password/reset" method="POST">
           @csrf
-          <input type="hidden" name="password_reset_token" value="{{$token}}">
-          <input type="password" placeholder="New password" name="new_password">
-          <input type="password" placeholder="Repeat new password" name="repeat_new_password">
+          <input type="hidden" name="token" value="{{$token}}">
+          <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
+          <input type="password" placeholder="New password" name="password">
+          <input type="password" placeholder="Repeat new password" name="password_confirmation">
           <input type="submit" value="Submit">
         </form>
       </div>
